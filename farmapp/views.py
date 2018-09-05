@@ -70,5 +70,6 @@ def how_it_works(request):
 def analytics(request):
     # data points
     detects = Image.objects.all()
+
     counties = [x.locality.county for x in detects]
     return render(request, 'analytics.html', locals())

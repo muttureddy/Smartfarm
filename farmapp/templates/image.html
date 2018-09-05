@@ -56,22 +56,6 @@
 
 
 	{% include 'navbar.html' %}
-<!-- <nav class="navdrawer-container promote-layer">
-	<h4>Navigation</h4>
-	<ul>
-		<li><a href="/">Home</a></li>
-		<li><a href="{% url 'how' %}">How it works</a></li>
-        <li><a href="#">Map View</a></li>
-	</ul>
-</nav> -->
-
-
-
-
-
-
-
-    </head>
     <body>
 
 
@@ -88,58 +72,112 @@
       <script src="{% static 'js/scripts.js' %}"></script>
         {% endblock %}
 
-    <script>
-        $(document).ready(function(){
-    var map = L.map('id_location_map').setView([-0.261360, 35.050093], 8);
-            mapLink ='<a href="http://openstreetmap.org">OpenStreetMap</a>';
-            L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: 'Map data &copy; ' + mapLink,
-              maxZoom:32,
-              }).addTo(map);
-
-            function onMapClick(e) {
-              var lat = e.latlng.lat;
-              var lng = e.latlng.lng;
-              if (typeof marker != 'undefined') {
-                  map.removeLayer(marker);  // delete previous marker
-                  marker = L.marker([lat, lng]).addTo(map);  // add new marker
-              }
-              else {
-                  marker = L.marker([lat, lng]).addTo(map);  // add new marker
-              }
-              $('#coordinates').val(lng + ',' + lat)
-            }
-            map.on('click', onMapClick);
-            function moveto(loca){
-                let lat = loca.coords.latitude;
-                let lng = loca.coords.longitude;
-                map.setView([lat, lng], 13);
-                marker = L.marker([lat, lng]).addTo(map);
-                $('#coordinates').val(lng + ',' + lat)
-            }
-           navigator.geolocation.getCurrentPosition(moveto)
-        });
-
-
-    </script>
 <div class="container">
-    <div class="row">
-        <div class="col-md-8">
-            <form action="{% url 'upload_image' %}" method="post" enctype="multipart/form-data">
+    <div class="row text-center">
+        <div class="col-md-12">
+            <strong class="d-block">Picture</strong>
+            <button class="btn btn-lg btn-outline-success m-4" onclick="$('#id_pic').click()" id="btncal">
+                <div id="btncaltxt">Choose Image</div>
+                <div class="text-centre" id="polite" style="line-height: 12px;"><small class="d-inline">click to change</small></div>
+            </button>
+            <form action="{% url 'upload_image' %}" method="post" class="mb-4" enctype="multipart/form-data">
                 {% csrf_token %}
                 {% bootstrap_form form %}
-              <div class="form-group">
-                <label for="formGroupExampleInput">Location</label>
-                <div id='id_location_map' style="height: 400px"></div>
-                <input id="coordinates" name="coordinates" class="form-control" type="hidden" value="" required>
-              </div>
-              <button class='btn btn-success'>submit</button>
-
-          </form>
+                <div class="form-group">
+                    <label for="formGroupExampleInput"><strong>Location</strong></label>
+                    <div id='id_location_map' style="height: 400px"></div>
+                    <input id="coordinates" name="coordinates" class="form-control" type="hidden" value="" required>
+                </div>
+                <button class='btn btn-success btn-lg'>Submit</button>
+            </form>
         </div>
     </div>
 </div>
 
-{{ form.media }}
+<script>
+    $(document).ready(function(){
+        var map = L.map('id_location_map').setView([-0.261360, 35.050093], 8);
+        mapLink ='<a href="http://openstreetmap.org">OpenStreetMap</a>';
+        L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: 'Map data &copy; ' + mapLink,
+            maxZoom:32,
+        }).addTo(map);
+
+        function onMapClick(e) {
+            var lat = e.latlng.lat;
+            var lng = e.latlng.lng;
+            if (typeof marker != 'undefined') {
+                map.removeLayer(marker);  // delete previous marker
+                marker = L.marker([lat, lng]).addTo(map);  // add new marker
+            }
+            else {
+                marker = L.marker([lat, lng]).addTo(map);  // add new marker
+            }
+            $('#coordinates').val(lng + ',' + lat)
+        }
+        map.on('click', onMapClick);
+        function moveto(loca){
+            let lat = loca.coords.latitude;
+            let lng = loca.coords.longitude;
+            map.setView([lat, lng], 13);
+            marker = L.marker([lat, lng]).addTo(map);
+            $('#coordinates').val(lng + ',' + lat)
+        }
+        navigator.geolocation.getCurrentPosition(moveto)
+
+
+        // Webcam javascript
+        startCamera=()=>{(_=>{
+            navigator.getMedia = (navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia);
+
+            navigator.getMedia(
+                // constraints
+                {video:true, audio:false},
+
+                // success callback
+                function (mediaStream) {
+                    var video = $('#video')[0];
+                    console.log('frame')
+                    video.src = window.URL.createObjectURL(mediaStream);
+                    video.play();
+                },
+                //handle error
+                function (error) {
+                    console.log(error);
+                })
+        })();};
+        polite = $("#polite");
+        $("#id_pic").change(_=>{
+            let name=$("#id_pic").val().replace(/.*\\.*\\/,'');
+            if(name===""){
+                $("#btncaltxt").text('Choose Image');
+                polite.hide();
+                return
+            }
+            $("#btncaltxt").text(name);
+            console.log(polite);
+            polite.show()
+        });
+        polite.hide();
+        $("#id_pic").hide();
+        $("label[for='id_pic']").hide()
+    });
+</script>
+<section>
+    <nav class="navdrawer-container promote-layer " style="background-color: rgba(0,0,0,.87);" id="contact">
+        <div class="container text-center">
+            <p>Contact</p>
+        <blockquote style="text-align: center">
+            E-mail: <a href="mailto:liz240@live.com">info@shambadoc.co.ke</a>
+        </blockquote>
+        </div>
+
+    <p style="text-align: center;">
+        <a href="#" target="_blank">
+            <img alt="Android app on Google Play" src="{% static 'images/playstore.png' %}"  style="width: 10%;"/>
+        </a>
+    </p>
+    </nav>
+</section>
+
 {% endblock %}
-</body>
